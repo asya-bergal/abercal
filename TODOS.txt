@@ -1,0 +1,11 @@
+Base functionality:
+* Display of any kind
+* Event duration
+* Repeating events and tasks
+* Tests
+
+Other:
+* Automatic ICS migration
+* Ability to import calendar from existing .json or ICS
+* Better task sorting
+* Better file separation

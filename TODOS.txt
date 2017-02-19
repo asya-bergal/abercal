@@ -1,10 +1,22 @@
 Base functionality:
 * Display of any kind
-* Event duration
-* Repeating events and tasks
+  - This is complicated because displays are what should
+    calculate local time stuff and deal with repeated events
 * Tests
+* Lots of comments before I forget everything
+* Task "completion"
+* Enforce correct constrains on which flags have to be there with which other flags
+* Add optional end date for repeating events
+  - Probably I should add a new "Repeater" class
+* Have event exceptions work correctly. Current failure mode:
+  - Add datetimes and repeat_days
+  - Add exception as string, but "tomorrow" is a precise date time which doesn't actually map
+    to one of the existing datetimes + some multiple of repeat_days
+  Basically henever you do stuff with it you should only count the day part of exceptions,
+  the exact datetime doesn't matter.
 
 Other:
+* Add type annotations? because jesus christ python
 * Automatic ICS migration
 * Ability to import calendar from existing .json or ICS
 * Better task sorting

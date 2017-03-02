@@ -9,20 +9,16 @@ Base functionality:
   - "two fridays from now"
 * Lots of comments before I forget everything
 * Enforce correct constrains on which flags have to be there with which other flags
-* Make calendar flag optional and have a default e.g. "cal"
 * Better arguments in general
 * README with examples
 * License
-* Make sure repeat_days is nonzero
 * Verication message after adding events/tasks
-* Separate things into multiple files.
-* Have duration encode as days, hours, minutes
 * Handle time-on-date correctly when it comes to events spanning multiple days
+  - This is probably done now but hasn't been tested
 
 Other:
 * GUI display (no input) a la Google Calendar - HTML templatey thing?
 * Automatic ICS migration
 * Ability to import calendar from existing .json or ICS
 * Better task sorting
-* Better file separation
 * Peter wants to be able to track the time completed

@@ -13,6 +13,11 @@ Base functionality:
 * Better arguments in general
 * README with examples
 * License
+* Make sure repeat_days is nonzero
+* Verication message after adding events/tasks
+* Separate things into multiple files.
+* Have duration encode as days, hours, minutes
+* Handle time-on-date correctly when it comes to events spanning multiple days
 
 Other:
 * GUI display (no input) a la Google Calendar - HTML templatey thing?

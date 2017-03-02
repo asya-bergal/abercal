@@ -1,23 +1,23 @@
 Base functionality:
-* Display of any kind
-  - This is complicated because displays are what should
-    calculate local time stuff and deal with repeated events
+* Displays desired:
+  - Display schedule for today/weekly
+  - Display TODOS for today/weekly in some priority order
+  - Display TODOS and schedule for today combined
 * Tests
+* Extend date parser to accept
+  - "next friday" "this friday"
+  - "two fridays from now"
 * Lots of comments before I forget everything
-* Task "completion"
 * Enforce correct constrains on which flags have to be there with which other flags
-* Add optional end date for repeating events
-  - Probably I should add a new "Repeater" class
-* Have event exceptions work correctly. Current failure mode:
-  - Add datetimes and repeat_days
-  - Add exception as string, but "tomorrow" is a precise date time which doesn't actually map
-    to one of the existing datetimes + some multiple of repeat_days
-  Basically henever you do stuff with it you should only count the day part of exceptions,
-  the exact datetime doesn't matter.
+* Make calendar flag optional and have a default e.g. "cal"
+* Better arguments in general
+* README with examples
+* License
 
 Other:
-* Add type annotations? because jesus christ python
+* GUI display (no input) a la Google Calendar - HTML templatey thing?
 * Automatic ICS migration
 * Ability to import calendar from existing .json or ICS
 * Better task sorting
 * Better file separation
+* Peter wants to be able to track the time completed

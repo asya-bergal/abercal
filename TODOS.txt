@@ -1,13 +1,10 @@
 Right now, in order:
 * Stuff editing which is secretly just stuff recreation
-* README with examples
 
 Base functionality:
 * Actual Python tests
 * Lots of comments before I forget everything
 * Enforce correct constrains on which flags have to be there with which other flags
-* README with examples
-* License
 * Optionally specify either duration or end time
 
 Other:

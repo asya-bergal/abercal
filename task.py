@@ -5,29 +5,20 @@ from enum import *
 from util import *
 from repeater import Repeater
 
-class Priority(Enum):
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
-class Task:
-
+class DueTask():
     def __init__(self,
                  description,
-                 due_dates=[],
-                 priority=None,
+                 due_dates,
                  repeater=None,
-                 completed = []):
-
-        if not due_dates and not priority:
-            raise InputError("Error: task but be initialized with either due date or priority")
-
+                 completed=[]):
         self.description = description
         self.due_dates = due_dates
-        self.priority = priority
         self.repeater = repeater
         # Dates of this task that have been completed
         self.completed = completed
+
+        if not self.due_dates:
+            raise InputError("Error: a due-date task must be initialized with one or more due dates.")
 
     # Return the time a task is due on a given date, or None if the task isn't due on that date
     # Structured a lot like time_interval_on_date in Event.py
@@ -58,8 +49,28 @@ class Task:
         return "%s | %s" % (time.strftime("%H:%M"), description)
 
     def __str__(self):
-        return '%s : %s%s%s%s' % (self.description,
-                                  "Due " + stringify_dates(self.due_dates), 
-                                  " priority %s" + duration.isoformat() if self.priority else "",
-                                  "\n" + str(self.repeater) if self.repeater else "",
-                                  "\nCompleted " + stringify_dates(self.completed))
+        return '%s : %s%s%s' % (self.description,
+                                "Due: " + stringify_dates(self.due_dates), 
+                                "\n" + str(self.repeater) if self.repeater else "",
+                                "\nCompleted: " + stringify_dates(self.completed))
+
+class Priority(Enum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+class PriorityTask():
+    def __init__(self,
+                 description,
+                 priority=Priority.LOW,
+                 completed = False):
+
+        self.description = description
+        self.priority = priority
+        # Has this task been completed? boolean
+        self.completed = completed
+
+    def __str__(self):
+        return '%s : %s%s' % (self.description,
+                              " Priority: %s" + self.priority.name,
+                              "\nCompleted: " + self.completed)

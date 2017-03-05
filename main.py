@@ -74,15 +74,17 @@ def main():
                             enddate=parsed_enddate)
         # Add a task
         elif args.task:
-            # Initialize a task to be low priority if no due-date is specified
-            if not args.datetimes and not args.priority:
-                args.priority = 1
-            calendar.add_task(args.task,
-                            due_dates=parsed_datetimes,
-                            priority=int(args.priority) if args.priority else None,
-                            days_delta=int(args.days_delta) if args.days_delta else None,
-                            exceptions=parsed_exceptions,
-                            enddate=parsed_enddate)
+            if args.datetimes:
+                calendar.add_due_task(args.task,
+                                      due_dates=parsed_datetimes,
+                                      days_delta=int(args.days_delta) if args.days_delta else None,
+                                      exceptions=parsed_exceptions,
+                                      enddate=parsed_enddate)
+            else:
+                # Initialize a task to be low priority if no due-date or priority is specified
+                if not args.priority:
+                    args.priority = 1
+                calendar.add_priority_task(args.task, priority=int(args.priority))
         else:
             calendar.display_today(timestamp)
 

@@ -8,7 +8,7 @@ import serialize
 
 from repeater import Repeater
 from event import Event
-from task import Task, Priority
+from task import DueTask, PriorityTask, Priority
 
 class Calendar:
 
@@ -23,7 +23,8 @@ class Calendar:
         else:
             # Create new calendar
             self.events = []
-            self.tasks = []
+            self.due_tasks = []
+            self.priority_tasks = []
             self.dump()
 
     def ordered_daily_events(self, dt):
@@ -45,8 +46,8 @@ class Calendar:
         next_event_found = False
         for event in events:
             start_time, end_time = event.time_interval_on_date(dt)
-            assert(start_time)
-            assert(end_time)
+            assert start_time
+            assert end_time
             start_date = datetime.combine(dt.date(), start_time)
             end_date = datetime.combine(dt.date(), end_time)
 
@@ -83,7 +84,7 @@ class Calendar:
                 print("")
 
     def get_tasks_with_priority(self, priority):
-        return list(filter(lambda x: x.priority == priority, self.tasks))
+        return list(filter(lambda x: x.priority == priority, self.priority_tasks))
 
     def ordered_daily_tasks(self, dt):
         # Check to make sure the task is due today, is not in the list of exceptions
@@ -92,7 +93,7 @@ class Calendar:
                                                   (not date_in(dt, task.repeater.exceptions)
                                                    if task.repeater else True) and
                                                   not date_in(dt, task.completed),
-                                     self.tasks))
+                                     self.due_tasks))
         tasks_due_soon.sort(key=lambda task: task.time_due_on_date(dt))
         return tasks_due_soon
 
@@ -101,8 +102,8 @@ class Calendar:
 
         for task in tasks:
             due_time = task.time_due_on_date(dt)
-            assert(due_time)
-            print("   " + Task.task_str(due_time, task.description))
+            assert due_time
+            print("   " + DueTask.task_str(due_time, task.description))
 
     def display_weekly_tasks(self, dt):
         week_start = dt - timedelta(days=(dt.weekday() + 1))
@@ -132,6 +133,16 @@ class Calendar:
 
         for task in priority_tasks:
             print("   " + task.description)
+
+    # def display_all_tasks(self, today):
+    #     # Partition into due dates and priority.
+    #     # (We guarantee in task creation that tasks either have due dates or a priority)
+    #     have_due_date = [task for task in self.tasks if task.due_dates]
+    #     have_priority = [task for task in self.tasks if not task.due_dates]
+        # Filter only tasks that are not completed
+
+        # Sort by next non-past due date
+        # Sort by priority
 
     # This displays everything due today and tomorrow, with completed tasks greyed out,
     # As well as high priority tasks
@@ -168,7 +179,8 @@ class Calendar:
         with open(self.fname, 'r') as f:
             data = json.load(f, cls=serialize.CalendarDecoder)
         self.events = data['events']
-        self.tasks = data['tasks']
+        self.due_tasks = data['due_tasks']
+        self.priority_tasks = data['priority_tasks']
 
     def dump(self):
         with open(self.fname, 'w') as f:
@@ -194,19 +206,26 @@ class Calendar:
         self.dump()
 
     @drop_nones
-    def add_task(self,
-                 description,
-                 due_dates=[],
-                 priority=None,
-                 days_delta=0,
-                 exceptions=[],
-                 enddate=None):
-        self.tasks.append(Task(description,
+    def add_due_task(self,
+                     description,
+                     due_dates,
+                     days_delta=0,
+                     exceptions=[],
+                     enddate=None):
+        self.due_tasks.append(DueTask(description,
                                due_dates,
-                               Priority(priority) if priority else None,
                                Repeater(days_delta,
                                         exceptions,
                                         enddate) if days_delta else None,
-                               []))
-        self.tasks.sort(key=lambda task: task.description)
+                              completed = []))
+        self.due_tasks.sort(key=lambda task: task.due_dates[0])
+        self.dump()
+
+    @drop_nones
+    def add_priority_task(self,
+                          description,
+                          priority = Priority.LOW,
+                          completed=False):
+        self.priority_tasks.append(PriorityTask(description, Priority(priority)))
+        self.priority_tasks.sort(key=lambda task: task.priority.value, reverse=True)
         self.dump()

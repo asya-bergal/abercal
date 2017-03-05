@@ -53,11 +53,11 @@ def main():
     # -day Display schedule for day to display
     # -today Display today's schedule + todos
     # -week Display weekly schedule + todos
-    # -todo Display all todos
+    # -todo Display all tasks
     parser.add_argument('-day', '--day')
     parser.add_argument('-week', '--week', action='store_true')
     parser.add_argument('-today', '--today', action='store_true')
-    parser.add_argument('-todo', '--todo', action='store_true')
+    parser.add_argument('-tasks', '--tasks', action='store_true')
 
     args = parser.parse_args()
 
@@ -100,7 +100,7 @@ def main():
             calendar.display_today(timestamp)
         elif args.day:
             calendar.display_daily_schedule(parsed_day)
-        elif args.todo:
+        elif args.tasks:
             calendar.display_all_tasks(timestamp)
         # Complete a task
         elif args.finish:

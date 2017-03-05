@@ -28,7 +28,7 @@ python main.py -c "testcal" -del "task6" <<< "y"
 
 echo -e "[Test] All Tasks:"
 echo "---------------------------------------------"
-python main.py -c "testcal" -todo
+python main.py -c "testcal" -tasks
 echo -e "[Test] This Week:"
 echo "---------------------------------------------"
 python main.py -c "testcal" -week

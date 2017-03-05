@@ -205,19 +205,22 @@ class Calendar:
         self.display_weekly_tasks(now)
 
     def find_due_task(self, task_str):
-        matching_due = list(filter(lambda x:task_str in x.description, self.due_tasks))
+        matching_due = list(filter(lambda x:task_str.lower() in x.description.lower(),
+                                   self.due_tasks))
         if matching_due:
             return matching_due[0]
         return None
 
     def find_priority_task(self, task_str):
-        matching_priority = list(filter(lambda x:task_str in x.description, self.priority_tasks))
+        matching_priority = list(filter(lambda x:task_str.lower() in x.description.lower(),
+                                        self.priority_tasks))
         if matching_priority:
             return matching_priority[0]
         return None
 
     def find_event(self, event_str):
-        matching_events = list(filter(lambda x:event_str in x.description, self.events))
+        matching_events = list(filter(lambda x:event_str.lower() in x.description.lower(),
+                                      self.events))
         if matching_events:
             return matching_events[0]
         return None

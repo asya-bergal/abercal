@@ -20,6 +20,12 @@ class DueTask():
         if not self.due_dates:
             raise InputError("Error: a due-date task must be initialized with one or more due dates.")
 
+    def next_due_date(self, dt):
+        for due_date in sorted(self.due_dates):
+            if due_date > dt and not date_in(due_date, self.completed):
+                return due_date
+        return None
+
     # Return the time a task is due on a given date, or None if the task isn't due on that date
     # Structured a lot like time_interval_on_date in Event.py
     def time_due_on_date(self, dt):
@@ -45,14 +51,17 @@ class DueTask():
         return None
 
     @staticmethod
-    def task_str(time, description):
+    def time_str(time, description):
         return "%s | %s" % (time.strftime("%H:%M"), description)
 
+    def datetime_str(dt, description):
+        return "%s | %s" % (dt.strftime("%m/%d %H:%M"), description)
+
     def __str__(self):
-        return '%s : %s%s%s' % (self.description,
-                                "Due: " + stringify_dates(self.due_dates), 
-                                "\n" + str(self.repeater) if self.repeater else "",
-                                "\nCompleted: " + stringify_dates(self.completed))
+        return '   %s\n   %s%s%s' % (self.description,
+                                               "Due: %s" % stringify_datetimes(self.due_dates),
+                                               "\n   " + str(self.repeater) if self.repeater else "",
+                                               "\n   Completed: %s" % stringify_dates(self.completed))
 
 class Priority(Enum):
     LOW = 1
@@ -71,6 +80,6 @@ class PriorityTask():
         self.completed = completed
 
     def __str__(self):
-        return '%s : %s%s' % (self.description,
-                              " Priority: %s" + self.priority.name,
-                              "\nCompleted: " + self.completed)
+        return '   %s\n   %s\n   %s' % (self.description,
+                                        "Priority: %s" % self.priority.name,
+                                        "Completed: %s" % self.completed)

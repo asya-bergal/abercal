@@ -1,31 +1,18 @@
 Right now, in order:
-* All tasks display
-* Task completion
-* Stuff deletion
 * Stuff editing which is secretly just stuff recreation
-* Verification messages
-* Extend parser
-  - "Friday" should mean the following friday, not the current one
-* Better arguments
-  - Optional end-time or duration
 * README with examples
 
 Base functionality:
 * Actual Python tests
-* Extend date parser to accept
-  - "next friday" "this friday"
-  - "two fridays from now"
 * Lots of comments before I forget everything
 * Enforce correct constrains on which flags have to be there with which other flags
-* Better arguments in general
 * README with examples
 * License
-* Verication message after adding events/tasks
-* Command for "completing" tasks
 * Optionally specify either duration or end time
-* Do something about the fact that importing dateparser is horrifically slow
 
 Other:
+* Better editing:
+  e.g., add exception rather than restate exception list
 * GUI display (no input) a la Google Calendar - HTML templatey thing?
 * Automatic ICS migration
 * Ability to import calendar from existing .json or ICS

@@ -87,8 +87,8 @@ class Event:
                                    (" at " + location) if location else "")
 
     def __str__(self):
-        return '%s : %s%s%s%s' % (self.description,
-            stringify_dates(self.starting_dates),
-            " for " + str(self.duration),
-            (" at " + self.location) if self.location else "",
-            ("\n" + str(self.repeater)) if self.repeater else "")
+        return '   %s\n   %s\n   %s%s%s' % (self.description,
+                                            "Dates: %s" % stringify_datetimes(self.starting_dates),
+                                            "Duration: %s" % str(self.duration),
+                                            "\n   Location: " + self.location if self.location else "",
+                                            "\n   " + str(self.repeater) if self.repeater else "")

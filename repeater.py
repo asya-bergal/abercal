@@ -12,4 +12,4 @@ class Repeater:
     def __str__(self):
         return 'Repeats every %d days%s%s' % (self.days_delta,
                  (" except for " + stringify_dates(self.exceptions)) if self.exceptions else "",
-                 " until " + self.end_date.isoformat() if self.end_date else "")
+                 " until " + self.end_date.date().isoformat() if self.end_date else "")

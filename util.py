@@ -40,9 +40,11 @@ def drop_nones(f):
         return f(*args, **new_kw)
     return wrapper
 
-def stringify_dates(dts):
+def stringify_datetimes(dts):
     return reduce(lambda x,y: x + (y.isoformat() + ", "), dts, "")
+
+def stringify_dates(dts):
+    return reduce(lambda x,y: x + (y.date().isoformat() + ", "), dts, "")
 
 def date_in(dt, dts):
     return any([dt.date() == x.date() for x in dts])
-

@@ -31,7 +31,7 @@ class CalendarEncoder(json.JSONEncoder):
     def encode_task(task):
         return {'description' : task.description,
                 'due_dates' : [x.isoformat() for x in task.due_dates],
-                'priority' : task.priority.name,
+                'priority' : task.priority.name if task.priority else None,
                 'repeater' : CalendarEncoder.encode_repeater(task.repeater) if task.repeater else None,
                 'completed' : [x.isoformat() for x in task.completed]}
 
@@ -53,7 +53,7 @@ class CalendarDecoder(json.JSONDecoder):
     def decode_repeater(repeater):
         return Repeater(repeater['days_delta'],
                         list(map(decode_date, repeater['exceptions'])),
-                        decode_date(repeater['end_date']))
+                        decode_date(repeater['end_date']) if repeater['end_date'] else None)
 
     @staticmethod
     def decode_event(event):
@@ -61,13 +61,13 @@ class CalendarDecoder(json.JSONDecoder):
                      list(map(decode_date, event['starting_dates'])),
                      CalendarDecoder.decode_timedelta(event['duration']),
                      event['location'],
-                     decode_repeater(event['repeater']) if event['repeater'] else None)
+                     CalendarDecoder.decode_repeater(event['repeater']) if event['repeater'] else None)
 
     @staticmethod
     def decode_task(task):
         return Task(task['description'],
                      list(map(decode_date, task['due_dates'])),
-                     Priority[task['priority']],
+                     Priority[task['priority']] if task['priority'] else None,
                      CalendarDecoder.decode_repeater(task['repeater']) if task['repeater'] else None,
                      list(map(decode_date, task['completed'])))
 

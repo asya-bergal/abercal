@@ -1,3 +1,5 @@
+import copy
+from datetime import datetime, timedelta
 from enum import *
 
 from util import *
@@ -13,15 +15,47 @@ class Task:
     def __init__(self,
                  description,
                  due_dates=[],
-                 priority=Priority.LOW,
+                 priority=None,
                  repeater=None,
                  completed = []):
+
+        if not due_dates and not priority:
+            raise InputError("Error: task but be initialized with either due date or priority")
+
         self.description = description
         self.due_dates = due_dates
         self.priority = priority
         self.repeater = repeater
         # Dates of this task that have been completed
         self.completed = completed
+
+    # Return the time a task is due on a given date, or None if the task isn't due on that date
+    # Structured a lot like time_interval_on_date in Event.py
+    def time_due_on_date(self, dt):
+        # Check if date is in any of the starting due dates
+        for due_date in self.due_dates:
+            if due_date.date() == dt.date():
+                return due_date.timetz()
+        # Check if the date is encoded by the repeater
+        if self.repeater:
+            # Check to make sure date is not in list of exceptions
+            if date_in(dt, self.repeater.exceptions):
+                return None
+            # Check to make sure date is not past the end_date of the repeater
+            if not self.repeater.end_date == None and dt.date() > self.repeater.end_date.date():
+                return None
+            for due_date in self.due_dates:
+                cur_date = copy.deepcopy(due_date)
+                # Check multiples of days_delta up to the current date
+                while cur_date < dt:
+                    cur_date += timedelta(days=self.repeater.days_delta)
+                    if cur_date.date() == dt.date():
+                        return cur_date.timetz()
+        return None
+
+    @staticmethod
+    def task_str(time, description):
+        return "%s | %s" % (time.strftime("%H:%M"), description)
 
     def __str__(self):
         return '%s : %s%s%s%s' % (self.description,

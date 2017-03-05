@@ -7,9 +7,9 @@ class Repeater:
         self.end_date = end_date
 
         if self.days_delta == 0:
-            raise InputError("Error: cannot have event that repeats every 0 days.")
+            raise InputError("Error: cannot have repeater that repeats every 0 days.")
 
     def __str__(self):
         return 'Repeats every %d days%s%s' % (self.days_delta,
-                 " except for " + stringify_dates(dts) if self.exceptions else "",
+                 (" except for " + stringify_dates(self.exceptions)) if self.exceptions else "",
                  " until " + self.end_date.isoformat() if self.end_date else "")

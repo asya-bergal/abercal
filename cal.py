@@ -1,6 +1,7 @@
 from datetime import *
 import json
 import os.path
+from colorama import Fore, Back, Style
 
 from util import *
 import serialize
@@ -26,8 +27,142 @@ class Calendar:
             self.dump()
 
     def ordered_daily_events(self, dt):
-        events = filter(time_on_date, self.events)
-        events.sort(key=time_on_date)
+        events = list(filter(lambda x : x.time_interval_on_date(dt), self.events))
+        events.sort(key=lambda x : x.time_interval_on_date(dt))
+        return events
+
+    def display_daily_schedule(self, dt):
+        now = local_now()
+        events = self.ordered_daily_events(dt)
+
+        day_style = ""
+        if dt.date() == now.date():
+            day_style = Style.BRIGHT
+        elif dt.date() < now.date():
+            day_style = Style.DIM
+        print(day_style + dt.strftime('%a, %d %b') + Style.RESET_ALL)
+        # Print every event
+        next_event_found = False
+        for event in events:
+            start_time, end_time = event.time_interval_on_date(dt)
+            assert(start_time)
+            assert(end_time)
+            start_date = datetime.combine(dt.date(), start_time)
+            end_date = datetime.combine(dt.date(), end_time)
+
+            event_style = ""
+            indent = "   "
+            # Print any ongoing events brightly and use a carat to indicate
+            # Current place in the schedule
+            if start_date <= now and end_date >= now:
+                event_style = Style.BRIGHT
+                indent = " > "
+                next_event_found = True
+            # Print any past events dimly
+            elif end_date < now:
+                event_style = Style.DIM
+            # If there's no ongoing event today, place the carat and brighten the
+            # next upcoming event today
+            elif dt.date() == now.date() and start_date > now and not next_event_found:
+                event_style = Style.BRIGHT
+                indent = " > "
+                next_event_found = True
+
+            # Actually print the schedule and reset the style afterwards
+            print(event_style + indent +
+                  Event.schedule_str(start_time, end_time,
+                                     event.description, event.location) +
+                  Style.RESET_ALL)
+
+    def display_weekly_schedule(self, dt):
+        week_start = dt - timedelta(days=(dt.weekday() + 1))
+        # Display all 7 days in a week
+        for day in range(7):
+            self.display_daily_schedule(week_start + timedelta(days=day))
+            if day==6:
+                print("")
+
+    def get_tasks_with_priority(self, priority):
+        return list(filter(lambda x: x.priority == priority, self.tasks))
+
+    def ordered_daily_tasks(self, dt):
+        # Check to make sure the task is due today, is not in the list of exceptions
+        # if there's a repeater, and is not completed
+        tasks_due_soon = list(filter(lambda task: task.time_due_on_date(dt) and
+                                                  (not date_in(dt, task.repeater.exceptions)
+                                                   if task.repeater else True) and
+                                                  not date_in(dt, task.completed),
+                                     self.tasks))
+        tasks_due_soon.sort(key=lambda task: task.time_due_on_date(dt))
+        return tasks_due_soon
+
+    def display_daily_tasks(self, dt):
+        tasks = self.ordered_daily_tasks(dt)
+
+        for task in tasks:
+            due_time = task.time_due_on_date(dt)
+            assert(due_time)
+            print("   " + Task.task_str(due_time, task.description))
+
+    def display_weekly_tasks(self, dt):
+        week_start = dt - timedelta(days=(dt.weekday() + 1))
+
+        for day in range(7):
+            cur_day = week_start + timedelta(days=day)
+
+            fore = ""
+            # Color the days corresponding to today and tomorrow red
+            tomorrow = dt + timedelta(days=1)
+            if dt.weekday() == cur_day.weekday() or tomorrow.weekday() == cur_day.weekday():
+               fore = Fore.RED
+
+            if self.ordered_daily_tasks(cur_day):
+                print(fore + Style.BRIGHT + "Due " + cur_day.strftime('%a, %d %b') + Style.NORMAL)
+                self.display_daily_tasks(cur_day)
+            if day == 6:
+                print("")
+
+        if self.get_tasks_with_priority(Priority.HIGH):
+            print(Fore.RED + Style.BRIGHT + "High Priority:" + Style.NORMAL)
+            self.display_priority_tasks(Priority.HIGH)
+            print("")
+
+    def display_priority_tasks(self, priority):
+        priority_tasks = self.get_tasks_with_priority(priority)
+
+        for task in priority_tasks:
+            print("   " + task.description)
+
+    # This displays everything due today and tomorrow, with completed tasks greyed out,
+    # As well as high priority tasks
+    def display_tasks(self, today):
+        tomorrow = today + timedelta(days = 1)
+
+        if self.ordered_daily_tasks(today):
+            print(Fore.RED + Style.BRIGHT + "Due Today:" + Style.NORMAL)
+            self.display_daily_tasks(today)
+            print("")
+
+        if self.ordered_daily_tasks(tomorrow):
+            print(Fore.RED + Style.BRIGHT + "Due Tomorrow:" + Style.NORMAL)
+            self.display_daily_tasks(tomorrow)
+            print("")
+
+        if self.get_tasks_with_priority(Priority.HIGH):
+            print(Fore.RED + Style.BRIGHT + "High Priority:" + Style.NORMAL)
+            self.display_priority_tasks(Priority.HIGH)
+            print("")
+
+    def display_today(self, now):
+        print("")
+        self.display_daily_schedule(now)
+        print("")
+        self.display_tasks(now)
+
+    def display_week(self, now):
+        print("")
+        self.display_weekly_schedule(now)
+        self.display_weekly_tasks(now)
 
     def load(self):
         with open(self.fname, 'r') as f:
@@ -62,16 +197,16 @@ class Calendar:
     def add_task(self,
                  description,
                  due_dates=[],
-                 priority=Priority.LOW,
+                 priority=None,
                  days_delta=0,
                  exceptions=[],
                  enddate=None):
         self.tasks.append(Task(description,
                                due_dates,
-                               priority,
+                               Priority(priority) if priority else None,
                                Repeater(days_delta,
                                         exceptions,
-                                        enddate),
+                                        enddate) if days_delta else None,
                                []))
         self.tasks.sort(key=lambda task: task.description)
         self.dump()

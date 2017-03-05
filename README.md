@@ -3,14 +3,14 @@
 A command line calendar with the features I want, narcistically named after me.
 Still in progress and not recommended for public use.
 
-Somewhat unique features?
+Somewhat unique features(?):
 - Datestring parsing
 - Repeated tasks
 - JSON storage designed to be human read/edit-able
 
 ## Dependencies
 
-This code requires the following Python packages which can all be installed via pip install <packagename>.
+This code requires the following Python packages which can all be installed via `pip install <packagename>`.
 - colorama
 - parsedatetime
 - tzlocal
@@ -46,14 +46,14 @@ python main.py -e "Arson Lecture" -dt "tuesday 2pm" "thursday 2pm" -r 7 -u "june
 # Add a new task with a single due date
 python main.py -t "Rent Bitcoin" -due "two weeks from now"
 
-# Add a repeating task
+# Add a weekly repeating task that goes until June 9th
 python main.py -t "Thermo Pset" -due "friday 5pm" -r 7 -u "june 9"
 ```
 
 #### With a Priority
 
 ```bash
-# Add a task with a priority in the range [1-3]
+# Add a task with a priority in the range [1,3]
 python main.py -t "Stop and smell the roses" -p 3
 ```
 

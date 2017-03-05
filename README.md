@@ -8,6 +8,14 @@ Somewhat unique features?
 - Repeated tasks
 - JSON storage designed to be human read/edit-able
 
+## Dependencies
+
+This code requires the following Python packages which can all be installed via pip install <packagename>.
+- colorama
+- parsedatetime
+- tzlocal
+- pytimeparse
+
 ## Usage
 
 ### Create a New Calendar
